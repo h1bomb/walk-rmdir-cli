@@ -16,3 +16,4 @@ npm i walk-rmdir-cli -g
     -d, --dir [value]  need delete directory
     -h, --help         output usage information
 ```
+

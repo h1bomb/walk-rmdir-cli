@@ -5,11 +5,14 @@ const path = require('path');
 const rimraf = require('rimraf');
 const fs = require('fs');
 const chalk = require('chalk');
-const packagePath = path.resolve(__dirname,'./package.json');
+const program = require('commander');
+const cliSpinners = require('cli-spinners');
+const logUpdate = require('log-update');
+const spinner = cliSpinners['dots'];
+const packagePath = path.resolve(__dirname, './package.json');
 const version = JSON.parse(fs.readFileSync(packagePath).toString()).version;
 const walker = walk.walk("./");
-
-var program = require('commander');
+let i = 0;
 
 program
     .version(version)
@@ -22,19 +25,40 @@ if (!program.dir) {
 }
 
 let isDeleted = false;
+let filesCount = 0;
+let deleteCount = 0;
+let logStr = '';
+let spinnerHandle;
 
 walker.on('directory', (root, fileStats, next) => {
-    if (fileStats.type === 'directory' && fileStats.name === program.dir) {
-        const dir = path.resolve(root, fileStats.name);
-        rimraf.sync(dir);
-        console.log(chalk `{bgMagenta Delete} ${dir}`);
-        isDeleted = true;
-    }
+    const dirs = program.dir.split(',');
+    dirs.forEach(dir => {
+        if (fileStats.name === dir) {
+            const dir = path.resolve(root, fileStats.name);
+            try {
+                rimraf.sync(dir);
+            } catch (err) {
+                logStr += err.message;
+            }
+            logStr += chalk `{bgMagenta Delete} ${dir} \n`;
+            isDeleted = true;
+            deleteCount++;
+        }
+    });
+    filesCount++;
+    next();
+}).on('errors', (root, nodeStatsArray, next) => {
     next();
 }).on('end', function () {
     if (!isDeleted) {
-        console.log(chalk `{black.bgYellowBright WARN} Nothing Deleted!`)
+        logUpdate(chalk `{black.bgYellowBright WARN} Nothing Deleted!`)
     } else {
-        console.log(chalk `{black.bgGreen INFO} Done!`);
+        logUpdate(chalk `{black.bgGreen INFO} Done!`);
     }
+    clearInterval(spinnerHandle);
 });
+
+spinnerHandle = setInterval(() => {
+    const frames = spinner.frames;
+    logUpdate(logStr + frames[i = ++i % frames.length] + ' Files Count:' + filesCount + ' Delete Count:' + deleteCount);
+}, spinner.interval);
