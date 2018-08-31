@@ -1,10 +1,15 @@
 # walk-rmdir-cli
 
-Bulk Delete Directory.
+Bulk Recursion Delete Directory.
+
+[![NPM version][npm-image]][npm-url]
+
+[npm-image]: https://img.shields.io/npm/v/walk-rmdir-cli.svg?style=flat-square
+[npm-url]: https://npmjs.org/package/walk-rmdir-cli
 
 ```bash
 npm i walk-rmdir-cli -g
-
+rmdirr -d dir1,dir2
 ```
 
 ```
