@@ -4,6 +4,8 @@ Bulk Recursion Delete Directory.
 
 [![NPM version][npm-image]][npm-url]
 
+![shotsnap](./shot.png)
+
 [npm-image]: https://img.shields.io/npm/v/walk-rmdir-cli.svg?style=flat-square
 [npm-url]: https://npmjs.org/package/walk-rmdir-cli
 
